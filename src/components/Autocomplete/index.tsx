@@ -59,6 +59,10 @@ const Autocomplete = ({ title, placeholder }: AutocompleteProps) => {
     );
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchTerm(suggestion);
+  };
+
   return (
     <div className="autocomplete">
       <h1>{title}</h1>
@@ -67,13 +71,15 @@ const Autocomplete = ({ title, placeholder }: AutocompleteProps) => {
         placeholder={placeholder}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        aria-label="Search Pokémon"
+        aria-label={placeholder}
       />
       {error && <div className="error">{error}</div>}
       <ul>
         {filteredSuggestions.length > 0
           ? filteredSuggestions.map((suggestion, index) => (
-              <li key={index}>{highlightMatch(suggestion, searchTerm)}</li>
+              <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                {highlightMatch(suggestion, searchTerm)}
+              </li>
             ))
           : searchTerm && <li className="no-results">No results found</li>}
       </ul>
