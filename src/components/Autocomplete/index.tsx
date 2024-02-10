@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./styles.scss";
+import HighlightMatch from "../HighlightMatch";
 
 interface AutocompleteProps {
   title: string;
@@ -78,7 +79,7 @@ const Autocomplete = ({ title, placeholder }: AutocompleteProps) => {
         {filteredSuggestions.length > 0
           ? filteredSuggestions.map((suggestion, index) => (
               <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
-                {highlightMatch(suggestion, searchTerm)}
+                <HighlightMatch text={suggestion} searchTerm={searchTerm} />
               </li>
             ))
           : searchTerm && <li className="no-results">No results found</li>}
