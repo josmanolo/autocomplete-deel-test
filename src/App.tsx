@@ -3,7 +3,7 @@ import Autocomplete from './components/Autocomplete';
 
 function App() {
   return (
-    <Autocomplete />
+    <Autocomplete title='Pokemon Autocomplete' placeholder='Search Pokémon...'/>
   );
 }
 

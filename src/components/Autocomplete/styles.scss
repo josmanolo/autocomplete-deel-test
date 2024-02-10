@@ -47,6 +47,8 @@ body {
     border-bottom-left-radius: 4px;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    max-height: 510px;
+    overflow-y: auto; 
 
     li {
       padding: 15px;
