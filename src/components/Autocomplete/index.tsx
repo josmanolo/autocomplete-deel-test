@@ -4,10 +4,12 @@ import "./styles.scss";
 
 const Autocomplete = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [allPokemon, setAllPokemon] = useState<string[]>([]); 
+  const [allPokemon, setAllPokemon] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+
+  const NO_RESULTS = "No results found";
 
   useEffect(() => {
     const fetchPokemonNames = async () => {
@@ -28,21 +30,34 @@ const Autocomplete = () => {
   }, []);
 
   const handleFilter = (searchTerm: string) => {
+    setIsSearching(!!searchTerm);
     if (!searchTerm) {
-      setIsSearching(false);
       setSuggestions([]);
     } else {
       setError("");
-      setIsSearching(true);
       const filteredSuggestions = allPokemon.filter((name) =>
         name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      
       setSuggestions(
-        filteredSuggestions.length > 0
-          ? filteredSuggestions
-          : ["No results found"]
+        filteredSuggestions.length > 0 ? filteredSuggestions : [NO_RESULTS]
       );
     }
+  };
+
+  const highlightMatch = (name: string) => {
+    if (!searchTerm) return name;
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+    const parts = name.split(regex);
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <strong key={index} className="highlight">
+          {part}
+        </strong>
+      ) : (
+        part
+      )
+    );
   };
 
   return (
@@ -53,8 +68,9 @@ const Autocomplete = () => {
         placeholder="Search Pokémon..."
         value={searchTerm}
         onChange={(e) => {
-          setSearchTerm(e.target.value);
-          handleFilter(e.target.value);
+          const term = e.target.value;
+          setSearchTerm(term);
+          handleFilter(term);
         }}
         aria-label="Search Pokémon"
       />
@@ -62,12 +78,13 @@ const Autocomplete = () => {
       {isSearching && (
         <ul>
           {suggestions.map((suggestion, index) => (
-            <li key={index}>
-              {suggestion !== "No results found" ? (
-                suggestion
-              ) : (
-                <em>{suggestion}</em>
-              )}
+            <li
+              key={index}
+              className={suggestion === NO_RESULTS ? "no-results" : ""}
+            >
+              {suggestion !== NO_RESULTS
+                ? highlightMatch(suggestion)
+                : suggestion}
             </li>
           ))}
         </ul>
