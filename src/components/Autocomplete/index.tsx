@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './styles.scss';
 
 const Autocomplete = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +34,7 @@ const Autocomplete = () => {
 
   return (
     <div className="autocomplete">
+        <h1>React Autocomplete</h1>
       <input
         type="text"
         placeholder="Search Pokémon..."
