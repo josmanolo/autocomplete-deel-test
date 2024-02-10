@@ -1,50 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './styles.scss';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./styles.scss";
 
 const Autocomplete = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [allPokemon, setAllPokemon] = useState<string[]>([]); 
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [pokemonNames, setPokemonNames] = useState<string[]>([]);
+  const [error, setError] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchPokemonNames = async () => {
       try {
-        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=151');
-        const names = response.data.results.map((pokemon: { name: string }) => pokemon.name);
-        setPokemonNames(names);
+        const response = await axios.get(
+          "https://pokeapi.co/api/v2/pokemon?limit=150"
+        );
+        const names = response.data.results.map(
+          (pokemon: { name: string }) => pokemon.name
+        );
+        setAllPokemon(names);
       } catch (error) {
-        console.error("Error loading:", error);
+        setError("Error loading data");
       }
     };
 
     fetchPokemonNames();
   }, []);
 
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = pokemonNames.filter(name => 
+  const handleFilter = (searchTerm: string) => {
+    if (!searchTerm) {
+      setIsSearching(false);
+      setSuggestions([]);
+    } else {
+      setError("");
+      setIsSearching(true);
+      const filteredSuggestions = allPokemon.filter((name) =>
         name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setSuggestions(filtered);
-    } else {
-      setSuggestions([]);
+      setSuggestions(
+        filteredSuggestions.length > 0
+          ? filteredSuggestions
+          : ["No results found"]
+      );
     }
-  }, [searchTerm, pokemonNames]);
+  };
 
   return (
     <div className="autocomplete">
-        <h1>React Autocomplete</h1>
+      <h1>Pokemon Autocomplete</h1>
       <input
         type="text"
         placeholder="Search Pokémon..."
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          handleFilter(e.target.value);
+        }}
+        aria-label="Search Pokémon"
       />
-      {searchTerm && suggestions.length > 0 && (
+      {error && <div className="error">{error}</div>}
+      {isSearching && (
         <ul>
           {suggestions.map((suggestion, index) => (
-            <li key={index}>{suggestion}</li>
+            <li key={index}>
+              {suggestion !== "No results found" ? (
+                suggestion
+              ) : (
+                <em>{suggestion}</em>
+              )}
+            </li>
           ))}
         </ul>
       )}
